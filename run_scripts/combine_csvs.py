@@ -3,10 +3,10 @@
     
     Usage: 
     # No other files:
-    python scripts/consolidate_results.py --results-dir results/test/ --out-file temp.csv
+    python run_scripts/consolidate_results.py --results-dir results/test/ --out-file temp.csv
 
     # Other files:
-    python scripts/consolidate_results.py --results-dir results/test/ --out-file temp.csv --other-csv-files temp.csv next.csv
+    python run_scripts/consolidate_results.py --results-dir results/test/ --out-file temp.csv --other-csv-files temp.csv next.csv
 
 """
 import os
@@ -37,46 +37,11 @@ def get_args():
                          action="store",
                          help="Name of CSV suffix",
                          default="output.csv")
-    options.add_argument("--cluster-files",
-                         action="store_true",
-                         help="If true, consolidate cluster files",
-                         default=False)
-    options.add_argument("--img-files",
-                         action="store_true",
-                         help="If true, consolidate img files",
-                         default=False)
     # Name of python file to run
     return options.parse_args()
 
-
-
-def combine_img_files(sup_dir : str, endings=".png"):
-    """ Combine images"""
-
-
-    suffix = ".png"
-    outdir = os.path.join(sup_dir, "consolidated_images")
-    if os.path.exists(outdir): 
-        shutil.rmtree(outdir)
-
-    os.makedirs(outdir, exist_ok=True)
-    copy_pairs = []
-
-    for (dirpath, dirnames, filenames) in os.walk(sup_dir):
-
-        for file_ in filenames:  
-            if file_.endswith(suffix):  
-                file_full_path = os.path.join(dirpath, file_)
-                file_new_path = os.path.join(outdir, file_)
-
-                copy_pairs.append([file_full_path, file_new_path])
-
-    for i in copy_pairs:
-        shutil.copy(*i)
-
-
 def merge_files(sup_dir: str, suffix: str, other_csv_files: List[str],
-                out_file: str, cluster_files : bool):
+                out_file: str):  
     """merge_files.
 
     Args:
@@ -111,32 +76,20 @@ def merge_files(sup_dir: str, suffix: str, other_csv_files: List[str],
         files_to_merge.extend(other_files)
 
 
-    if not cluster_files: 
-        # Get dfs
-        df_list = []
-        for df_file in files_to_merge:
-            temp = pd.read_csv(df_file, index_col=0)
-            # sort
-            temp = temp.reindex(sorted(temp.columns), axis=1)
-            df_list.append(temp)
+    # Get dfs
+    df_list = []
+    for df_file in files_to_merge:
+        temp = pd.read_csv(df_file, index_col=0)
+        # sort
+        temp = temp.reindex(sorted(temp.columns), axis=1)
+        df_list.append(temp)
 
-        out_df = pd.concat(df_list, ignore_index=True)
-        out_df.to_csv(out_file)
-
-    else: 
-        objs = []
-        for infile  in files_to_merge:
-            objs.append(json.load(open(infile, "r")))
-
-        # dump output
-        json.dump(objs, open(out_file, "w"))
-
-        # also combine all image files
-        combine_img_files(sup_dir, endings=".png")
+    out_df = pd.concat(df_list, ignore_index=True)
+    out_df.to_csv(out_file)
 
 if __name__ == "__main__":
     args = get_args()
     sup_dir = args.results_dir
 
     merge_files(args.results_dir, args.suffix, args.other_csv_files,
-                args.out_file, args.cluster_files)
+                args.out_file) 

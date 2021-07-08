@@ -59,11 +59,22 @@ The various provided config files are detailed here:
 6. `configs/2021_06_30_example_launch.json`: Run an example program launch
 
 
+After completing a set of experiments, all the results entries from the specific experiment can be collected into a single results file using the script `run_scripts/combine_csvs.py`. For instance, to combine any experiments in the example launch: 
+
+```
+python run_scripts/combine_csvs.py --results-dir results/dense/2021_06_30_example_launch -
+-out-file results/dense/2021_06_30_example_launch/combined_csv.csv
+```
+
+These combined results files are used 
 
 ## Making figures
 
-Figures can be constructed usign the scripts contained in the folder `make_figs.py`
+Figures can be constructed usign the scripts contained in the folder `make_figs/`. Assumign the proper folders. All figure scripts can be run using the command: 
 
+```
+source make_figs/make_all_figs.sh
+```
 
 TODO: 
-- Add in simple 
+- Add in download from already finished results to make all figures
