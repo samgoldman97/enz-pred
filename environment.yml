@@ -24,7 +24,7 @@ dependencies:
 - pysocks=1.7.1
 - pytz=2020.1
 - pyqt=5.9.2
-- scikit-learn-0.22.1
+- scikit-learn=0.22.1
 - pip:
     - tape-proteins==0.4
     - fair-esm
