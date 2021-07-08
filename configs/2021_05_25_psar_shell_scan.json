@@ -1,0 +1,441 @@
+{ 
+    "launcher_args": { 
+        "experiment_name" : "2021_05_25_pqsar_angstrom_dist",
+        "cluster_script" : false,
+        "slurm_script"  : "run_scripts/generic_slurm.sh",
+        "use_slurm" : true
+    },
+    "universal_args": {
+        "_dataset" : ["phosphatase_chiral_binary"
+        ],
+        "_slurm_args": [{
+                "_num_gpu" : 0,
+                "time" : "0-02:00:00",
+                "job-name" : "angstrom_shell"
+        }],
+        "seed" : [1,2,3],
+        "scale-prot": [true],
+        "cache-dir" : ["data/program_cache"],
+        "num-folds" : [10], 
+        "num-kfold-trials" : [5], 
+        "train-size" : [0.85],
+        "val-size" : [0.15],
+        "test-size": [0.0],
+        "splitter" : ["kfold-seq"],
+        "eval-grouping" : ["SUBSTRATES"],
+        "pivot-task" : ["SUBSTRATES"],
+        "layers" : [null],
+        "model-dropout" : [null],
+        "n-neighbors": [null],
+        "seq-dist-type": [null],
+        "sub-dist-type": [null],
+        "align-dist": [null],
+        "debug-mode" : [false],
+        "debug-sample" : [0.01],
+        "gpu": [false],
+        "run-optuna" : [false],
+        "optuna-folds" : [5],
+        "optuna-trials" : [10],
+        "optuna-grid-sample" : [true],
+        "optuna-global": [true],
+        "alpha" : [100.0],
+        "model-params-file" : ["results/dense/2021_05_25_pqsar_olea_hyperopt/olea_binary/linear/bbbf1a846dafef71c9ab2597aa1c2786/2021_05_25-090307_optuna_params.json"],
+        "ignore-train": [true], 
+        "epochs": [100],
+        "batch-size": [null], 
+        "prot-featurizer" : [null],
+        "concat-val" : [true],
+        "count-positives": [null]
+    },
+    "iterative_args": [
+        {
+            "prot-featurizer" : ["esm"],
+            "_dataset" : ["phosphatase_chiral_binary",
+                          "davis_filtered",
+                          "duf_binary",
+                          "esterase_binary"
+            ],
+            "pool-prot-strategy" : ["mean"],
+            "scale-prot" : [true],
+            "_angstrom_dist": [null],
+            "model": ["linear"]
+        },
+        {
+            "prot-featurizer" : ["esm"],
+            "_dataset" : ["gt_acceptors_chiral_binary",
+                          "halogenase_NaBr_binary"],
+            "pool-prot-strategy" : ["mean"],
+            "scale-prot" : [true],
+            "_angstrom_dist": [null],
+            "num-kfold-trials" : [1], 
+            "splitter" : ["loo-seq"],
+            "model": ["linear"]
+        },
+        {
+            "prot-featurizer" : [null],
+            "_dataset" : ["phosphatase_chiral_binary",
+                          "davis_filtered",
+                          "esterase_binary",
+                          "duf_binary"],
+            "pool-prot-strategy" : [null],
+            "scale-prot" : [null],
+            "_angstrom_dist": [null],
+            "model-params-file": ["results/dense/2021_05_25_pqsar_olea_hyperopt/olea_binary/knn/14576d264ba0c5e3eb2ba3d838cc70d6/2021_05_25-092653_optuna_params.json"],
+            "model": ["knn"],
+            "seq-dist-type": ["levenshtein"]
+        },
+        {
+            "prot-featurizer" : [null],
+            "_dataset" : ["gt_acceptors_chiral_binary",
+                          "halogenase_NaBr_binary"],
+            "pool-prot-strategy" : [null],
+            "scale-prot" : [null],
+            "_angstrom_dist": [null],
+            "num-kfold-trials" : [1], 
+            "splitter" : ["loo-seq"],
+            "model-params-file": ["results/dense/2021_05_25_pqsar_olea_hyperopt/olea_binary/knn/14576d264ba0c5e3eb2ba3d838cc70d6/2021_05_25-092653_optuna_params.json"],
+            "model": ["knn"],
+            "seq-dist-type": ["levenshtein"]
+        },
+        {
+            "_dataset" : ["phosphatase_chiral_binary"],
+            "prot-featurizer" : ["esm"],
+            "pool-prot-strategy" : ["hard"], 
+            "scale-prot" : [true],
+            "_angstrom_dist": [3,4,5,6,8,10,12,15,20,25],
+            "model": ["linear"],
+            "gpu": [false],
+            "_slurm_args": [{
+                    "_num_gpu" : 0, 
+                    "time" : "0-3:00:00",
+                    "job-name" : "supervised_pqsar"
+            }]
+        },
+        {
+            "_dataset" : ["phosphatase_chiral_binary"],
+            "prot-featurizer" : ["esm"],
+            "pool-prot-strategy" : ["randmsa"], 
+            "scale-prot" : [true],
+            "pool-num": [1,2,3,6,11,19,34,62,111,200],
+            "model": ["linear"],
+            "gpu": [false],
+            "_slurm_args": [{
+                    "_num_gpu" : 0, 
+                    "time" : "0-5:00:00",
+                    "job-name" : "supervised_pqsar"
+            }]
+        },
+        {
+            "_dataset" : ["phosphatase_chiral_binary"],
+            "prot-featurizer" : ["esm"],
+            "pool-prot-strategy" : ["msaconserv"],
+            "scale-prot" : [true],
+            "pool-num": [1,2,3,6,11,19,34,62,111,200],
+            "model": ["linear"],
+            "gpu": [false],
+            "_slurm_args": [{
+                    "_num_gpu" : 0, 
+                    "time" : "0-5:00:00",
+                    "job-name" : "supervised_pqsar"
+            }]
+        },
+        {
+            "_dataset" : ["phosphatase_chiral_binary"],
+            "prot-featurizer" : ["esm"],
+            "pool-prot-strategy" : ["msacover"],
+            "scale-prot" : [true],
+            "pool-num": [1,2,3,6,11,19,34,62,111,200],
+            "model": ["linear"],
+            "gpu": [false],
+            "_slurm_args": [{
+                    "_num_gpu" : 0, 
+                    "time" : "0-5:00:00",
+                    "job-name" : "supervised_pqsar"
+            }]
+        },
+        {
+            "_dataset" : ["gt_acceptors_chiral_binary"],
+            "prot-featurizer" : ["esm"],
+            "pool-prot-strategy" : ["hard"], 
+            "scale-prot" : [true],
+            "_angstrom_dist": [3,4,5,6,7,8,10,12,15,20,25],
+            "model": ["linear"],
+            "num-kfold-trials" : [1], 
+            "splitter" : ["loo-seq"],
+            "gpu": [false],
+            "_slurm_args": [{
+                    "_num_gpu" : 0, 
+                    "time" : "0-3:00:00",
+                    "job-name" : "supervised_pqsar"
+            }]
+        },
+        {
+            "_dataset" : [ "gt_acceptors_chiral_binary"],
+            "prot-featurizer" : ["esm"],
+            "pool-prot-strategy" : ["msacover"],
+            "scale-prot" : [true],
+            "pool-num": [1,2,3,6,11,19,34,62,111,200],
+            "model": ["linear"],
+            "num-kfold-trials" : [1], 
+            "splitter" : ["loo-seq"],
+            "gpu": [false],
+            "_slurm_args": [{
+                    "_num_gpu" : 0, 
+                    "time" : "0-5:00:00",
+                    "job-name" : "supervised_pqsar"
+            }]
+        },
+        {
+            "_dataset" : [ "gt_acceptors_chiral_binary"],
+            "prot-featurizer" : ["esm"],
+            "pool-prot-strategy" : ["msaconserv"], 
+            "scale-prot" : [true],
+            "pool-num": [1,2,3,6,11,19,34,62,111,200],
+            "model": ["linear"],
+            "num-kfold-trials" : [1], 
+            "splitter" : ["loo-seq"],
+            "gpu": [false],
+            "_slurm_args": [{
+                    "_num_gpu" : 0, 
+                    "time" : "0-5:00:00",
+                    "job-name" : "supervised_pqsar"
+            }]
+        },
+        {
+            "_dataset" : [ "gt_acceptors_chiral_binary"],
+            "prot-featurizer" : ["esm"],
+            "pool-prot-strategy" : ["randmsa"], 
+            "scale-prot" : [true],
+            "pool-num": [1,2,3,6,11,19,34,62,111,200],
+            "model": ["linear"],
+            "num-kfold-trials" : [1], 
+            "splitter" : ["loo-seq"],
+            "gpu": [false],
+            "_slurm_args": [{
+                    "_num_gpu" : 0, 
+                    "time" : "0-5:00:00",
+                    "job-name" : "supervised_pqsar"
+            }]
+        },
+        {
+            "_dataset" : ["duf_binary"],
+            "prot-featurizer" : ["esm"],
+            "pool-prot-strategy" : ["hard"], 
+            "scale-prot" : [true],
+            "_angstrom_dist": [3,4,5,6,8,10,12,15,20],
+            "model": ["linear"],
+            "gpu": [false],
+            "_slurm_args": [{
+                    "_num_gpu" : 0, 
+                    "time" : "0-3:00:00",
+                    "job-name" : "supervised_pqsar"
+            }]
+        },
+        {
+            "_dataset" : [ "duf_binary"],
+            "prot-featurizer" : ["esm"],
+            "pool-prot-strategy" : ["msacover"],
+            "scale-prot" : [true],
+            "pool-num": [1,2,3,6,11,19,34,62,111,200],
+            "model": ["linear"],
+            "gpu": [false],
+            "_slurm_args": [{
+                    "_num_gpu" : 0, 
+                    "time" : "0-5:00:00",
+                    "job-name" : "supervised_pqsar"
+            }]
+        },
+        {
+            "_dataset" : [ "duf_binary"],
+            "prot-featurizer" : ["esm"],
+            "pool-prot-strategy" : ["msaconserv"], 
+            "scale-prot" : [true],
+            "pool-num": [1,2,3,6,11,19,34,62,111,200],
+            "model": ["linear"],
+            "gpu": [false],
+            "_slurm_args": [{
+                    "_num_gpu" : 0, 
+                    "time" : "0-5:00:00",
+                    "job-name" : "supervised_pqsar"
+            }]
+        },
+        {
+            "_dataset" : [ "duf_binary"],
+            "prot-featurizer" : ["esm"],
+            "pool-prot-strategy" : ["randmsa"], 
+            "scale-prot" : [true],
+            "pool-num": [1,2,3,6,11,19,34,62,111,200],
+            "model": ["linear"],
+            "gpu": [false],
+            "_slurm_args": [{
+                    "_num_gpu" : 0, 
+                    "time" : "0-5:00:00",
+                    "job-name" : "supervised_pqsar"
+            }]
+        },
+        {
+            "_dataset" : ["davis_filtered"], 
+            "prot-featurizer" : ["esm"],
+            "pool-prot-strategy" : ["hard"], 
+            "scale-prot" : [true],
+            "_angstrom_dist": [3,4,5,6,8,10,12,15,20,25,30,35,45],
+            "model": ["linear"],
+            "gpu": [false],
+            "_slurm_args": [{
+                    "_num_gpu" : 0, 
+                    "time" : "0-3:00:00",
+                    "job-name" : "supervised_pqsar"
+            }]
+        },
+        {
+            "_dataset" : ["davis_filtered"],
+            "prot-featurizer" : ["esm"],
+            "pool-prot-strategy" : ["msaconserv"],
+            "scale-prot" : [true],
+            "pool-num": [1,2,3,6,11,19,34,62,111,200],
+            "model": ["linear"],
+            "gpu": [false],
+            "_slurm_args": [{
+                    "_num_gpu" : 0, 
+                    "time" : "0-5:00:00",
+                    "job-name" : "supervised_pqsar"
+            }]
+        },
+        {
+            "_dataset" : ["davis_filtered"],
+            "prot-featurizer" : ["esm"],
+            "pool-prot-strategy" : ["msacover"],
+            "scale-prot" : [true],
+            "pool-num": [1,2,3,6,11,19,34,62,111,200],
+            "model": ["linear"],
+            "gpu": [false],
+            "_slurm_args": [{
+                    "_num_gpu" : 0, 
+                    "time" : "0-5:00:00",
+                    "job-name" : "supervised_pqsar"
+            }]
+        },
+        {
+            "_dataset" : ["davis_filtered"],
+            "prot-featurizer" : ["esm"],
+            "pool-prot-strategy" : ["randmsa"],
+            "scale-prot" : [true],
+            "pool-num": [1,2,3,6,11,19,34,62,111,200],
+            "model": ["linear"],
+            "gpu": [false],
+            "_slurm_args": [{
+                    "_num_gpu" : 0, 
+                    "time" : "0-5:00:00",
+                    "job-name" : "supervised_pqsar"
+            }]
+        },
+        {
+            "_dataset" : ["halogenase_NaBr_binary"], 
+            "prot-featurizer" : ["esm"],
+            "pool-prot-strategy" : ["hard"], 
+            "scale-prot" : [true],
+            "_angstrom_dist": [3,4,5,6,8,10,12,15,20,25],
+            "model": ["linear"],
+            "num-kfold-trials" : [1], 
+            "splitter" : ["loo-seq"],
+            "gpu": [false],
+            "_slurm_args": [{
+                    "_num_gpu" : 0, 
+                    "time" : "0-3:00:00",
+                    "job-name" : "supervised_pqsar"
+            }]
+        },
+        {
+            "_dataset" : ["halogenase_NaBr_binary"],
+            "prot-featurizer" : ["esm"],
+            "pool-prot-strategy" : ["msaconserv"],
+            "scale-prot" : [true],
+            "pool-num": [1,2,3,6,11,19,34,62,111,200],
+            "model": ["linear"],
+            "num-kfold-trials" : [1], 
+            "splitter" : ["loo-seq"],
+            "gpu": [false],
+            "_slurm_args": [{
+                    "_num_gpu" : 0, 
+                    "time" : "0-5:00:00",
+                    "job-name" : "supervised_pqsar"
+            }]
+        },
+        {
+            "_dataset" : ["halogenase_NaBr_binary"],
+            "prot-featurizer" : ["esm"],
+            "pool-prot-strategy" : ["msacover"],
+            "scale-prot" : [true],
+            "pool-num": [1,2,3,6,11,19,34,62,111,200],
+            "model": ["linear"],
+            "num-kfold-trials" : [1], 
+            "splitter" : ["loo-seq"],
+            "gpu": [false],
+            "_slurm_args": [{
+                    "_num_gpu" : 0, 
+                    "time" : "0-5:00:00",
+                    "job-name" : "supervised_pqsar"
+            }]
+        },
+        {
+            "_dataset" : ["halogenase_NaBr_binary"],
+            "prot-featurizer" : ["esm"],
+            "pool-prot-strategy" : ["randmsa"],
+            "scale-prot" : [true],
+            "pool-num": [1,2,3,6,11,19,34,62,111,200],
+            "model": ["linear"],
+            "num-kfold-trials" : [1], 
+            "splitter" : ["loo-seq"],
+            "gpu": [false],
+            "_slurm_args": [{
+                    "_num_gpu" : 0, 
+                    "time" : "0-5:00:00",
+                    "job-name" : "supervised_pqsar"
+            }]
+        },
+
+
+        {
+            "_dataset" : ["esterase_binary"], 
+            "prot-featurizer" : ["esm"],
+            "pool-prot-strategy" : ["hard"], 
+            "scale-prot" : [true],
+            "_angstrom_dist": [1,2,3,4,6,8,10,12,15,20],
+            "model": ["linear"],
+            "gpu": [false],
+            "_slurm_args": [{
+                    "_num_gpu" : 0, 
+                    "time" : "0-3:00:00",
+                    "job-name" : "supervised_pqsar"
+            }]
+        },
+        {
+            "_dataset" : ["esterase_binary"],
+            "prot-featurizer" : ["esm"],
+            "pool-prot-strategy" : ["msaconserv"],
+            "scale-prot" : [true],
+            "pool-num": [1,2,3,6,11,19,34,62,111,200],
+            "model": ["linear"],
+            "gpu": [false],
+            "_slurm_args": [{
+                    "_num_gpu" : 0, 
+                    "time" : "0-6:00:00",
+                    "job-name" : "supervised_pqsar"
+            }]
+        },
+        {
+            "_dataset" : ["esterase_binary"],
+            "prot-featurizer" : ["esm"],
+            "pool-prot-strategy" : ["msacover"],
+            "scale-prot" : [true],
+            "pool-num": [1,2,3,6,11,19,34,62,111,200],
+            "model": ["linear"],
+            "gpu": [false],
+            "_slurm_args": [{
+                    "_num_gpu" : 0, 
+                    "time" : "0-6:00:00",
+                    "job-name" : "supervised_pqsar"
+            }]
+        }
+    ]  
+}

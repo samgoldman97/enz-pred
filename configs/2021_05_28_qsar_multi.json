@@ -1,0 +1,138 @@
+
+{ 
+    "launcher_args": { 
+        "experiment_name" : "2021_05_28_qsar_with_multi",
+        "cluster_script" : false,
+        "slurm_script"  : "run_scripts/generic_slurm.sh",
+        "use_slurm" : true
+    },
+    "universal_args": {
+        "_dataset" : [
+                      "gt_acceptors_chiral_binary",
+                      "phosphatase_chiral_binary",
+                      "esterase_binary"
+        ],
+        "_slurm_args": [{
+                "_num_gpu" : 0,
+                "time" : "0-03:00:00",
+                "job-name" : "supervised_kfold"
+        }],
+        "seed" : [1, 2,3],
+        "scale-prot": [true],
+        "cache-dir" : ["data/program_cache"],
+        "num-folds" : [10], 
+        "num-kfold-trials" : [5], 
+        "train-size" : [0.85],
+        "val-size" : [0.15],
+        "test-size": [0.0],
+        "splitter" : ["kfold-sub"],
+        "eval-grouping" : ["SEQ"],
+        "pivot-task" : ["SEQ"],
+        "layers" : [null],
+        "model-dropout" : [null],
+        "n-neighbors": [null],
+        "seq-dist-type": [null],
+        "sub-dist-type": [null],
+        "align-dist": [null],
+        "debug-mode" : [false],
+        "debug-sample" : [0.01],
+        "gpu": [false],
+        "run-optuna" : [false],
+        "optuna-folds" : [5],
+        "optuna-trials" : [10],
+        "optuna-grid-sample" : [true],
+        "optuna-global" : [true],
+        "alpha" : [10.0],
+        "ignore-train": [false], 
+        "epochs": [100],
+        "batch-size": [null], 
+        "prot-featurizer" : [null],
+        "concat-val" : [true],
+        "count-positives": [null]
+    },
+    "iterative_args": [
+        {
+            "scale-chem" : [true],
+            "chem-featurizer" : ["jtvae"], 
+            "sub-dist-type" : [null], 
+            "model": ["linear"],
+            "model-params-file" : ["results/dense/2021_05_25_qsar_olea_hyperopt_seed_1/halogenase_NaBr_binary/linear/20344904aa2dab0c26b775eaaf9fb9ec/2021_05_28-095928_optuna_params.json"]
+        },
+        {
+            "scale-chem" : [true],
+            "chem-featurizer" : ["random"], 
+            "sub-dist-type" : [null], 
+            "model": ["linear"],
+            "model-params-file" : ["results/dense/2021_05_25_qsar_olea_hyperopt_seed_1/halogenase_NaBr_binary/linear/1c75d6dbc5d0a9086847a6529d361dc1/2021_05_28-095930_optuna_params.json"]
+        },
+        {
+            "scale-chem" : [false],
+            "chem-featurizer" : ["morgan1024"], 
+            "sub-dist-type" : ["tanimoto"], 
+            "model": ["linear"],
+            "model-params-file" : ["results/dense/2021_05_25_qsar_olea_hyperopt_seed_1/halogenase_NaBr_binary/linear/22e7a0cd6f69ac7006eefd353b2be9f9/2021_05_28-095931_optuna_params.json"]
+        },
+        {
+            "scale-chem" : [false],
+            "chem-featurizer" : ["morgan1024"], 
+            "sub-dist-type" : ["tanimoto"], 
+            "model": ["knn"], 
+            "model-params-file" :  ["results/dense/2021_05_25_qsar_olea_hyperopt_seed_1/halogenase_NaBr_binary/knn/ec78faf43d1910df1b7cc78f92c18af4/2021_05_28-095932_optuna_params.json"]
+        },
+
+
+        {
+            "chem-featurizer" : ["morgan1024"],
+            "scale-chem" : [false],
+            "model": ["ffn", "ffnsingle"],
+            "model-params-file" : ["results/dense/2021_05_25_qsar_olea_hyperopt_seed_1/halogenase_NaBr_binary/ffn/d08a61f5297b4cc5f41489a5994f6b63/2021_05_28-095933_optuna_params.json"],
+            "optuna-grid-sample" : [false],
+            "gpu": [true],
+            "_slurm_args": [{
+                    "_num_gpu" : 1, 
+                    "time" : "0-10:00:00",
+                    "job-name" : "supervised_qsar"
+            }]
+        },
+        {
+            "prot-featurizer" : ["esm", "cat"],
+            "chem-featurizer" : ["morgan1024"],
+            "pool-prot-strategy" : ["mean"], 
+            "scale-prot" : [true],
+            "scale-chem" : [false],
+            "_angstrom_dist": [null],
+            "alpha": [null],
+            "model": ["ffn"],
+            "model-params-file" : ["results/dense/2021_05_25_qsar_olea_hyperopt_seed_1/halogenase_NaBr_binary/ffn/d08a61f5297b4cc5f41489a5994f6b63/2021_05_28-095933_optuna_params.json"],
+            "optuna-grid-sample" : [false],
+            "pivot-task": [null],
+            "eval-grouping": ["SEQ"],
+            "gpu": [true],
+            "_slurm_args": [{
+                    "_num_gpu" : 1, 
+                    "time" : "0-11:00:00",
+                    "job-name" : "supervised_qsar"
+            }]
+        },
+        {
+            "prot-featurizer" : ["esm"],
+            "chem-featurizer" : ["morgan1024"],
+            "pool-prot-strategy" : ["mean"], 
+            "scale-prot" : [true],
+            "scale-chem" : [false],
+            "_angstrom_dist": [null],
+            "model-params-file" : ["results/dense/2021_05_25_qsar_olea_hyperopt_seed_1/halogenase_NaBr_binary/ffndot/8f231786594dbb599d766b17a13e6ac7/2021_05_28-095934_optuna_params.json"],
+            "alpha": [null],
+            "model": ["ffndot"],
+            "optuna-grid-sample" : [false],
+            "pivot-task": [null],
+            "eval-grouping": ["SEQ"],
+            "gpu": [true],
+            "_slurm_args": [{
+                    "_num_gpu" : 1, 
+                    "time" : "0-11:00:00",
+                    "job-name" : "supervised_qsar"
+            }]
+        }
+    ]
+}

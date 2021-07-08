@@ -1,0 +1,16 @@
+Subs
+CCCCCCC(OC1=CC=C([N+]([O-])=O)C=C1)=O
+CCCCCC(OC1=CC=C([N+]([O-])=O)C=C1)=O
+O=[N+](C1=CC=C(OC(CCOC2=CC=C(Cl)C=C2)=O)C=C1)[O-]
+O=C(OC1=CC=C([N+]([O-])=O)C=C1)CCCCCN=[N+]=[N-]
+O=C(OC1=CC=C([N+]([O-])=O)C=C1)CCC2=NN=C(C3=CC=CC=C3)O2
+O=C(OC1=CC=C(C=C1)[N+]([O-])=O)CCC2CCCC2
+O=[N+](C1=CC=C(OC(CCCCCCC2=CC=CC=C2)=O)C=C1)[O-]
+O=[N+](C1=CC=C(OC(CCCC[C@H]2[C@]([H])([C@]([H])(CS2)N3)NC3=O)=O)C=C1)[O-]
+C1=CC=C(C=C1)C(=O)OC2=CC=C(C=C2)[N+](=O)[O-]
+O=[N+](C1=CC=C(OC(CCCCCCCCCCC)=O)C=C1)[O-]
+O=[N+](C1=CC=C(OC(CCCCC#C)=O)C=C1)[O-]
+CCCCC(C)(C)C(OC1=CC=C([N+]([O-])=O)C=C1)=O
+O=[N+](C1=CC=C(OC(C(C)(C)C)=O)C=C1)[O-]
+O=C(OC1=CC=C([N+]([O-])=O)C=C1)COCCOCCCC
+CCCCCCCCCC(OC1=CC=C([N+]([O-])=O)C=C1)=O
