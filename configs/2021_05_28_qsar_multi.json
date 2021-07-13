@@ -43,7 +43,7 @@
         "optuna-grid-sample" : [true],
         "optuna-global" : [true],
         "alpha" : [10.0],
-        "ignore-train": [false], 
+        "ignore-train": [true], 
         "epochs": [100],
         "batch-size": [null], 
         "prot-featurizer" : [null],
