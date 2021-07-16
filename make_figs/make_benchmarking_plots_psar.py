@@ -107,7 +107,8 @@ def make_psar_results_tables(df, outdir):
         # Remove value from beginning
         pivoted_df.columns = pivoted_df.columns.droplevel()
         with open(
-            os.path.join(outdir, f"PSAR_{table_metric}_result_tbl.txt"), "w"
+            os.path.join(outdir, f"PSAR_{table_metric}_result_tbl.txt"), "w",
+            encoding="utf-8"
         ) as fp:
             latex_str = pivoted_df.to_latex(
                 caption=f"Full PSAR results table of {table_metric}",
@@ -412,7 +413,7 @@ def make_auxilary_psar(df, outdir):
 
 
 if __name__ == "__main__":
-    results_file = "results/dense/2021_05_27_psar_multi/consolidated_psar_multi.csv"
+    results_file = "results/dense/2021_05_27_psar_with_multi/consolidated_psar_multi.csv"
     outdir = "results/figure_export/"
     os.makedirs(outdir, exist_ok=True)
 

@@ -133,7 +133,8 @@ def make_qsar_results_tables(df, outdir):
         pivoted_df.columns = pivoted_df.columns.droplevel()
 
         with open(
-            os.path.join(outdir, f"QSAR_{table_metric}_result_tbl.txt"), "w"
+            os.path.join(outdir, f"QSAR_{table_metric}_result_tbl.txt"), "w",
+            encoding="utf-8"
         ) as fp:
             latex_str = pivoted_df.to_latex(
                 caption=f"Full QSAR results table of {table_metric}",
@@ -393,7 +394,7 @@ def make_auxilary_qsar(df, outdir):
 
 
 if __name__ == "__main__":
-    results_file = "results/dense/2021_05_28_qsar_multi/qsar_combined.csv"
+    results_file = "results/dense/2021_05_28_qsar_with_multi/qsar_combined.csv"
     outdir = "results/figure_export/"
     os.makedirs(outdir, exist_ok=True)
 
