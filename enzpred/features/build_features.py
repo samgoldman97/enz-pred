@@ -147,7 +147,7 @@ FEATURIZER_ARGS = [
         ["--jt-vae-loc"],
         dict(
             action="store",
-            default="data/processed/dense/precomputed_features/",
+            default="data/processed/precomputed_features/",
             type=str,
             help="""Location of the JT-VAE embeddings""",
         ),

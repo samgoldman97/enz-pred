@@ -1,0 +1,67 @@
+{ 
+    "launcher_args": { 
+        "experiment_name" : "2021_12_13_embedding_compare",
+        "cluster_script" : false,
+        "slurm_script"  : "run_scripts/generic_slurm.sh",
+        "use_slurm" : true
+    },
+    "universal_args": {
+        "_dataset" : ["gt_acceptors_chiral_binary", 
+                      "phosphatase_chiral_binary",
+                      "duf_binary",
+                      "esterase_binary",
+                      "halogenase_NaBr_binary"],
+        "_slurm_args": [{
+                "_num_gpu" : 0,
+                "time" : "0-03:00:00",
+                "job-name" : "supervised_psar"
+        }],
+        "seed" : [1, 2, 3],
+        "scale-prot": [true],
+        "cache-dir" : ["data/program_cache"],
+        "num-folds" : [20], 
+        "num-kfold-trials" : [1], 
+        "train-size" : [0.85],
+        "val-size" : [0.15],
+        "test-size": [0.0],
+        "splitter" : ["kfold-seq"],
+        "eval-grouping": ["SUBSTRATES"],
+        "pivot-task": ["SUBSTRATES"],
+        "layers" : [null],
+        "model-dropout" : [null],
+        "n-neighbors": [null],
+        "seq-dist-type": [null],
+        "sub-dist-type": [null],
+        "align-dist": [null],
+        "debug-mode" : [false],
+        "debug-sample" : [0.01],
+        "gpu": [false],
+        "run-optuna" : [false],
+        "optuna-folds" : [5],
+        "optuna-trials" : [10],
+        "optuna-grid-sample" : [true],
+        "optuna-global": [true],
+        "alpha" : [10.0],
+        "ignore-train": [true], 
+        "epochs": [100],
+        "batch-size": [null], 
+        "prot-featurizer" : [null],
+        "concat-val" : [true],
+        "count-positives": [null]
+    },
+    "iterative_args": [
+        {
+            "prot-featurizer" : ["bepler", "esm"],
+            "pool-prot-strategy" : ["mean"], 
+            "scale-prot" : [true],
+            "_angstrom_dist": [null],
+            "model": ["linear"], 
+            "_dataset" : [ "phosphatase_chiral_binary",
+                           "esterase_binary"],
+            "num-folds" : [10], 
+            "num-kfold-trials" : [50], 
+            "splitter" : ["kfold-seq"],
+            "model-params-file" : ["results/dense/2021_05_25_pqsar_olea_hyperopt_seed_1/olea_binary/linear/4b2802bdb5c3ab77a095033c15618ed1/2021_05_26-165102_optuna_params.json"]
+        }
+   ]
+}

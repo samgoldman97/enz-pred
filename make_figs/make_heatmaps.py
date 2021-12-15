@@ -42,6 +42,19 @@ DATASET_RENAME = {
     "Halogenase": "Halogenase",
 }
 
+PSAR_DATASET_WSPACE = {
+    "Gt": 0.0,
+    "Duf": -0.8,
+    "Esterase": -0.6,
+    "Phosphatase": -0.4,
+    "Halogenase": -0.4,
+}
+
+QSAR_DATASET_WSPACE = {
+    "Gt": -0.4,
+    "Phosphatase": -0.4,
+    "Esterase": 0.2,
+}
 
 def threshold(df_temp, threshold_val=0.5, use_threshold=True):
     """Threshold a data frame"""
@@ -54,21 +67,22 @@ def threshold(df_temp, threshold_val=0.5, use_threshold=True):
     return df_copy
 
 
-def plot_dataframe(df_list, name_list, save_dir, save_name, dataset_title, qsar=False):
+def plot_dataframe(df_list, name_list, save_dir, save_name, dataset_title,
+                   wspace, qsar=False):
     """Plot dataframe"""
 
     # Set same axes
     col_list = [set(i.columns) for i in df_list]
     row_list = [set(i.index) for i in df_list]
-    intersecting_cols = list(set.intersection(*col_list))
-    intersecting_rows = list(set.intersection(*row_list))
+    intersecting_cols = sorted(list(set.intersection(*col_list)))
+    intersecting_rows = sorted(list(set.intersection(*row_list)))
 
     # Modify all outputs to hvae the same rows and cols
     df_list = [j.loc[intersecting_rows, intersecting_cols] for j in df_list]
 
     fig, axes = plt.subplots(nrows=1, ncols=len(df_list))
     for df, name, ax in zip(df_list, name_list, axes):
-        ax.imshow(df, cmap="hot")
+        im = ax.imshow(df, cmap="hot", vmin=0, vmax=1)
         if qsar:
             ax.set_ylabel("Substrates")
             ax.set_xlabel("Enzymes")
@@ -82,9 +96,9 @@ def plot_dataframe(df_list, name_list, save_dir, save_name, dataset_title, qsar=
         ax.set_yticks([])
 
     fig.suptitle(dataset_title)
-
+    plt.subplots_adjust(wspace =  wspace)
+    fig.colorbar(im, ax=axes, location="bottom", shrink=0.3)
     plt.savefig(os.path.join(save_dir, save_name), bbox_inches="tight")
-
 
 def get_bool_index_ar(df, model_select):
     """get appropriate bool index"""
@@ -162,6 +176,7 @@ def make_QSAR_plots(results_file, outdir, use_threshold=False):
             new_dict[dataset][model] = df_list
 
     for dataset, model_dict in new_dict.items():
+        dataset_= dataset.title()
         df_list = [
             model_dict["QSAR Single"][1],
             threshold(
@@ -180,7 +195,8 @@ def make_QSAR_plots(results_file, outdir, use_threshold=False):
             name_list,
             save_dir=outdir,
             save_name=f"appendix_{dataset}_qsar_threshold_{use_threshold}.pdf",
-            dataset_title=DATASET_RENAME.get(dataset.title()),
+            dataset_title=DATASET_RENAME.get(dataset_),
+            wspace=QSAR_DATASET_WSPACE.get(dataset_),
             qsar=True,
         )
 
@@ -220,6 +236,8 @@ def make_PSAR_plots(results_file, outdir, use_threshold=False):
 
             df_json = pd.DataFrame(predictions).query("split == 'test'")
 
+
+
             df_pred = df_json.pivot_table(
                 values="pred", index="SEQ", columns="SUBSTRATES"
             )
@@ -236,6 +254,7 @@ def make_PSAR_plots(results_file, outdir, use_threshold=False):
             new_dict[dataset][model] = df_list
 
     for dataset, model_dict in new_dict.items():
+        dataset_= dataset.title()
         df_list = [
             model_dict["PSAR Single"][1],
             threshold(
@@ -254,7 +273,8 @@ def make_PSAR_plots(results_file, outdir, use_threshold=False):
             name_list,
             save_dir=outdir,
             save_name=f"appendix_{dataset}_psar_threshold_{use_threshold}.pdf",
-            dataset_title=DATASET_RENAME.get(dataset.title()),
+            wspace=PSAR_DATASET_WSPACE.get(dataset_),
+            dataset_title=DATASET_RENAME.get(dataset_)
         )
 
 
@@ -275,8 +295,8 @@ def main():
     make_PSAR_plots(INPUT_FILE_PSAR, RESULTS_DIR_PSAR, use_threshold=False)
     make_QSAR_plots(INPUT_FILE_QSAR, RESULTS_DIR_QSAR, use_threshold=False)
 
-    make_PSAR_plots(INPUT_FILE_PSAR, RESULTS_DIR_PSAR, use_threshold=True)
-    make_QSAR_plots(INPUT_FILE_QSAR, RESULTS_DIR_QSAR, use_threshold=True)
+    #make_PSAR_plots(INPUT_FILE_PSAR, RESULTS_DIR_PSAR, use_threshold=True)
+    #make_QSAR_plots(INPUT_FILE_QSAR, RESULTS_DIR_QSAR, use_threshold=True)
 
 
 if __name__ == "__main__":

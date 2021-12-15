@@ -42,6 +42,13 @@ dataset_names = [
     "phosphatase_chiral_binary",
 ]
 
+table_dataset_names = [
+    "gt_acceptors_chiral_binary",
+    "esterase_binary",
+    "phosphatase_chiral_binary",
+    "halogenase_NaBr_binary",
+]
+
 compare_method = "morgan1024 linear"
 
 x_label_names = ["Baselines", "Multi-task", "CPI", "Single-task"]
@@ -77,7 +84,7 @@ def make_qsar_results_tables(df, outdir):
     """Make qsar results table"""
     new_table = []
     entries = []
-    for index, (dataset_name) in enumerate(dataset_names):
+    for index, (dataset_name) in enumerate(table_dataset_names):
         plot_df = df.query(f"dataset_name == '{dataset_name}'").reset_index(drop=True)
         plot_df = plot_df[[j in full_list for j in plot_df["model_name"]]]
         dataset_rename = DATASET_NAME_MAP[dataset_name]
@@ -403,11 +410,11 @@ if __name__ == "__main__":
     )
     df = df.query("dataset_split == 'test'").reset_index(drop=True)
 
-    # Make auxilary qsar table
-    make_auxilary_qsar(df, outdir)
-
     # Make qsar results table
     make_qsar_results_tables(df, outdir)
+
+    # Make auxilary qsar table
+    make_auxilary_qsar(df, outdir)
 
     # Make qsar results plots
     make_qsar_plot(df, outdir)
