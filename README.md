@@ -75,6 +75,3 @@ Figures can be constructed usign the scripts contained in the folder `make_figs/
 ```
 source make_figs/make_all_figs.sh
 ```
-
-TODO: 
-- Add in download from already finished results to make all figures
