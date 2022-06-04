@@ -147,7 +147,7 @@ FEATURIZER_ARGS = [
         ["--jt-vae-loc"],
         dict(
             action="store",
-            default="data/processed/dense/precomputed_features/",
+            default="data/processed/precomputed_features/",
             type=str,
             help="""Location of the JT-VAE embeddings""",
         ),
@@ -739,7 +739,7 @@ class RDFeaturizer(FingerprintBaseFeaturizer):
         elif self.fprint_name == "MORGAN":
             self.nbits = n_bits
             self.fp_fn = lambda m: AllChem.GetMorganFingerprintAsBitVect(
-                m, 2, nBits=self.nbits
+                m, 2, nBits=self.nbits, useChirality = True # Set 
             )
         else:
             raise Exception(f"Fingerprint {self.fprint_name} is not NotImplemented")

@@ -11,13 +11,18 @@ from helpers import *
 
 method_name_map = {
     "levenshtein knn": "KNN: Levenshtein",
-    "esm-mean linear": "Ridge: pretrained",
-    "esm-mean ffnsingle": "FFN: pretrained",
-    "esm-mean ffn": "FFN: pretrained",
-    "esm-mean ffn(prot,chem)": "FFN: [pretrained, Morgan]",
-    "esm-mean ffn(prot,randchem)": "FFN: [pretrained, rand.]",
-    "esm-mean ffn(prot,catchem)": "FFN: [pretrained, one-hot]",
-    "esm-mean ffndot(prot,chem)": r"FFN: pretrained • Morgan",
+    "esm-mean linear": "Ridge: ESM-1b",
+    "esm-mean ffnsingle": "FFN: ESM-1b",
+    "esm-mean ffn": "FFN: ESM-1b",
+    "esm-mean ffn(prot,chem)": "FFN: [ESM-1b, Morgan]",
+    "esm-mean ffn(prot,randchem)": "FFN: [ESM-1b, rand.]",
+    "esm-mean ffn(prot,catchem)": "FFN: [ESM-1b, one-hot]",
+    "esm-mean ffndot(prot,chem)": r"FFN: ESM-1b • Morgan",
+
+    # Review additions
+    "blast knn": "KNN: BLAST",
+    "bepler-mean linear": "Ridge: pretrained (Bepler)",
+
 }
 
 baseline_models = ["levenshtein knn"]
@@ -32,6 +37,16 @@ dataset_names = [
     "esterase_binary",
     "phosphatase_chiral_binary",
 ]
+
+table_dataset_names = [
+    "halogenase_NaBr_binary",
+    "gt_acceptors_chiral_binary",
+    "duf_binary",
+    "esterase_binary",
+    "phosphatase_chiral_binary",
+    "olea_binary", 
+]
+
 compare_method = "esm-mean linear"
 
 joint_list = [baseline_models, multitask_models, cpi_models, singletask_models]
@@ -50,17 +65,22 @@ x_labels = (
 x_colors = get_colors(joint_list)
 
 ### Creating results table...
-def make_psar_results_tables(df, outdir):
+def make_psar_results_tables(df, outdir, methods, method_types, 
+                             file_prefix = "PSAR"):
     new_table = []
     entries = []
-    for index, (dataset_name) in enumerate(dataset_names):
+    for index, (dataset_name) in enumerate(table_dataset_names):
         plot_df = df.query(f"dataset_name == '{dataset_name}'").reset_index(drop=True)
-        plot_df = plot_df[[j in full_list for j in plot_df["model_name"]]]
+
+        if len(plot_df) == 0:
+            continue
+
+        plot_df = plot_df[[j in methods for j in plot_df["model_name"]]]
         dataset_rename = DATASET_NAME_MAP[dataset_name]
         for metric, metric_rename in METRIC_NAME_MAPPING.items():
             cur_max = None
             method_entries = []
-            for method, method_type in zip(full_list, x_labels):
+            for method, method_type in zip(methods, method_types):
                 temp_df = plot_df[plot_df["model_name"] == method]
                 temp_df = temp_df.groupby("seed").mean().reset_index()
                 vals = temp_df[metric]
@@ -98,6 +118,7 @@ def make_psar_results_tables(df, outdir):
     for table_metric in tables_to_build:
         new_df = global_df.query(f"Metric == '{table_metric}'")
         new_df.set_index(["Method Type", "Method"])
+
         pivoted_df = new_df.pivot_table(
             values=["Value"],
             columns=["Dataset"],  # , "Metric"],
@@ -107,7 +128,8 @@ def make_psar_results_tables(df, outdir):
         # Remove value from beginning
         pivoted_df.columns = pivoted_df.columns.droplevel()
         with open(
-            os.path.join(outdir, f"PSAR_{table_metric}_result_tbl.txt"), "w"
+            os.path.join(outdir, f"{file_prefix}_{table_metric}_result_tbl.txt"), "w",
+            encoding="utf-8"
         ) as fp:
             latex_str = pivoted_df.to_latex(
                 caption=f"Full PSAR results table of {table_metric}",
@@ -411,8 +433,95 @@ def make_auxilary_psar(df, outdir):
     plt.savefig(out_loc, bbox_inches="tight")
 
 
+
+def make_revision_hyperparam(outdir : str, 
+                             out_name : str = "hparam_compare.pdf"): 
+    """ """
+    out = os.path.join(outdir, out_name)
+    new_hparams = "results/dense/2021_12_14_psar_with_multi_phosphatase_with_hyperopt/combined_results.csv"
+    old_hparms = "results/dense/2021_05_27_psar_with_multi/consolidated_psar_multi.csv"
+    dataset = "phosphatase_chiral_binary"
+
+    df_new_hparam = extract_csv_file(
+        new_hparams, extract_pqsar_sweep_names, extract_dataset_name, rename=True
+    ).query("dataset_split == 'test'")
+
+
+    df_old_hparam = extract_csv_file(
+        old_hparms, extract_pqsar_sweep_names, extract_dataset_name, rename=True
+    ).query("dataset_split == 'test'")
+
+
+    # Select only phosphatase
+    df_old_hparam = df_old_hparam.query(f"dataset_name == '{dataset}'")
+    df_new_hparam = df_new_hparam.query(f"dataset_name == '{dataset}'")
+
+    # Add new column
+    df_old_hparam["Hyperparameters"] = "Thiolase"
+    df_new_hparam["Hyperparameters"] = "Phosphatase"
+
+    df = pd.concat([df_old_hparam, df_new_hparam])
+
+    model_order = [method_name_map[j] for j in full_list]
+
+    # Add fancy naming
+    df["Model"] = [method_name_map[j] for j in df["model_name"]]
+    df["AUPRC"] = df["avg-pr"]
+
+    sns.barplot(x = "Model", y = "AUPRC", hue = "Hyperparameters",
+                data = df, order = model_order,
+                palette = ["#7369AD", "#BF5A52"])
+    plt.xticks(rotation=35)
+    plt.savefig(out, bbox_inches="tight")
+
+def make_revision_plots(): 
+    """ Revision plots """
+    outdir = "results/figure_export/revision_figs"
+    os.makedirs(outdir, exist_ok=True)
+
+    # Make revision hyperparameter comparison 
+    make_revision_hyperparam(outdir, out_name = "hparam_compare.pdf")
+
+    # Embedding comparison
+    results_file = "results/dense/2021_12_13_embedding_compare/combined_data.csv"
+    df = extract_csv_file(
+        results_file, extract_pqsar_sweep_names, extract_dataset_name, rename=True
+
+    )
+    df = df.sort_values(by=["model_name", "dataset_name"]).query(
+        'dataset_split == "test"'
+    )
+
+    dist_compare_labels =  ["Single-task"] * 2
+    dist_compare_methods = ["bepler-mean linear", "esm-mean linear"]
+    make_psar_results_tables(df, outdir, 
+                             dist_compare_methods , dist_compare_labels,
+                             file_prefix = "PSAR_embed_compare"
+                             )
+
+    # Dist comparison 
+    results_file = "results/dense/2021_12_13_dist_compare/consolidated_dist_compare.csv"
+    df = extract_csv_file(
+        results_file, extract_pqsar_sweep_names, extract_dataset_name, rename=True
+
+    )
+    df = df.sort_values(by=["model_name", "dataset_name"]).query(
+        'dataset_split == "test"'
+    )
+
+    dist_compare_labels =  ["Baselines"] * 2
+    dist_compare_methods = ["levenshtein knn", "blast knn"]
+    make_psar_results_tables(df, outdir, 
+                             dist_compare_methods , dist_compare_labels,
+                             file_prefix = "PSAR_dist_compare")
+
+
+
 if __name__ == "__main__":
-    results_file = "results/dense/2021_05_27_psar_multi/consolidated_psar_multi.csv"
+    # Make revision plots
+    make_revision_plots()
+
+    results_file = "results/dense/2021_05_27_psar_with_multi/consolidated_psar_multi.csv"
     outdir = "results/figure_export/"
     os.makedirs(outdir, exist_ok=True)
 
@@ -424,10 +533,11 @@ if __name__ == "__main__":
     )
 
     # Make psar results table
-    make_psar_results_tables(df, outdir)
+    make_psar_results_tables(df, outdir, full_list, x_labels)
 
     # Make figures
     make_psar_plot(df, outdir)
 
     # Make auxilary plots comparing methods
     make_auxilary_psar(df, outdir)
+

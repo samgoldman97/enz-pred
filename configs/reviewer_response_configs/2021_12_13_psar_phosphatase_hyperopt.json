@@ -1,0 +1,109 @@
+{ 
+    "launcher_args": { 
+        "experiment_name" : "2021_12_13_pqsar_phosphatase_hyperopt",
+        "cluster_script" : false,
+        "slurm_script"  : "run_scripts/generic_slurm.sh",
+        "use_slurm" : true
+    },
+    "universal_args": {
+        "_dataset" : ["phosphatase_chiral_binary"],
+        "_slurm_args": [{
+                "_num_gpu" : 0,
+                "time" : "0-08:00:00",
+                "job-name" : "hyperopt"
+        }],
+        "seed" : [1],
+        "scale-prot": [true],
+        "cache-dir" : ["data/program_cache"],
+        "num-folds" : [5], 
+        "num-kfold-trials" : [1], 
+        "train-size" : [0.85],
+        "val-size" : [0.15],
+        "test-size": [0.0],
+        "splitter" : ["kfold-seq"],
+        "eval-grouping" : ["SUBSTRATES"],
+        "pivot-task" : ["SUBSTRATES"],
+        "layers" : [null],
+        "model-dropout" : [null],
+        "n-neighbors": [null],
+        "seq-dist-type": [null],
+        "sub-dist-type": [null],
+        "align-dist": [null],
+        "debug-mode" : [false],
+        "debug-sample" : [0.01],
+        "gpu": [false],
+        "run-optuna" : [true],
+        "optuna-folds" : [5],
+        "optuna-trials" : [10],
+        "optuna-grid-sample" : [true],
+        "optuna-global": [true],
+        "alpha" : [0.01],
+        "ignore-train": [true], 
+        "epochs": [100],
+        "batch-size": [null], 
+        "prot-featurizer" : [null],
+        "concat-val" : [true],
+        "count-positives": [null]
+    },
+    "iterative_args": [
+        {
+            "_dataset" : ["phosphatase_chiral_binary"],
+            "prot-featurizer" : ["esm"],
+            "pool-prot-strategy" : ["mean"], 
+            "scale-prot" : [true],
+            "_angstrom_dist": [15],
+            "model": ["linear"],
+            "gpu": [false],
+            "_slurm_args": [{
+                    "_num_gpu" : 0, 
+                    "time" : "0-10:00:00",
+                    "job-name" : "supervised_pqsar"
+            }]
+        },
+        {
+            "prot-featurizer" : ["esm"],
+            "pool-prot-strategy" : [null],
+            "scale-prot" : [null],
+            "_angstrom_dist": [null],
+            "model": ["knn"],
+            "seq-dist-type": ["levenshtein"],
+            "gpu" : [false]
+        },
+        {
+            "prot-featurizer" : ["esm"],
+            "chem-featurizer" : ["morgan1024"],
+            "pool-prot-strategy" : ["mean"], 
+            "scale-prot" : [true],
+            "scale-chem" : [false],
+            "_angstrom_dist": [null],
+            "alpha": [null],
+            "model": ["ffn", "ffndot"],
+            "optuna-grid-sample" : [false],
+            "pivot-task": [null],
+            "eval-grouping": ["SUBSTRATES"],
+            "gpu": [true],
+            "_slurm_args": [{
+                    "_num_gpu" : 1, 
+                    "time" : "0-18:00:00",
+                    "job-name" : "supervised_pqsar"
+            }]
+        },
+        {
+            "prot-featurizer" : ["esm"],
+            "pool-prot-strategy" : ["mean"], 
+            "scale-prot" : [true],
+            "_angstrom_dist": [null],
+            "alpha": [null],
+            "model": ["ffn"],
+            "optuna-grid-sample" : [false],
+            "seq-dist-type": [null],
+            "gpu": [true],
+            "_slurm_args": [{
+                    "_num_gpu" : 1, 
+                    "time" : "0-18:00:00",
+                    "job-name" : "supervised_pqsar"
+            }]
+        }
+
+    ]  
+}
