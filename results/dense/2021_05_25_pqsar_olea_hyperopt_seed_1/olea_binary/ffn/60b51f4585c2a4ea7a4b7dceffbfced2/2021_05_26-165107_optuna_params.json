@@ -1,0 +1,7 @@
+{
+  "model_dropout": 0.15306292852712575,
+  "weight_decay": 0.0006793590707415398,
+  "hidden_size": 50,
+  "layers": 1,
+  "learning_rate": 0.0009885009096469723
+}
